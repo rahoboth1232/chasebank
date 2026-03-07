@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+:root {
+    --bg: #f6f7fb;
+    --card: #ffffff;
+    --primary: #2563eb;
+    --text: #0f172a;
+    --muted: #64748b;
+    --border: #e5e7eb;
+}
+
+body {
+    background: var(--bg);
+    font-family: Inter, system-ui, Arial, sans-serif;
+}
+
+/* Container */
+.container {
+    margin-left:auto;
+}
+
+/* Card aligned right */
+.transfer-card {
+    width: 1200px;
+    margin:0px auto;
+    background: var(--card);
+    padding: 28px;
+   
+}
+
+/* Horizontal rows */
+.form-row {
+display: flex-1;
+    margin-bottom: 22px;
+}
+
+
+
+/* Make memo wider than date */
+.form-row:last-of-type .field:first-child {
+    flex: 0.6;
+}
+.form-row:last-of-type .field:last-child {
+    flex: 1.4;
+}
+
+label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text);
+}
+
+select,
+input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    font-size: 14px;
+    background: #fff;
+}
+
+select:focus,
+input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* Buttons */
+.transfer-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 30px;
+}
+
+.btn {
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.btn-secondary {
+    background: #fff;
+    border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+    background: #f1f5f9;
+}
+
+/* Messages */
+.msg {
+    margin-bottom: 16px;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.msg.success {
+    background: #f0fdf4;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+}
+
+.msg.error {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+    .transfer-card {
+        width: 100%;
+    }
+    .form-row {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    {% for message in messages %}
+        <div class="msg {{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="transfer-card">
+
+            <!-- Row 1 -->
+            <div class="form-row">
+
+            <div>
+                <div class="field">
+                    <label for="from_account">Transfer From</label>
+                    <select name="from_account" id="from_account" required>
+                        {% for acc in accounts %}
+                        <option value="{{ acc.id }}">
+                            {{ acc.user }} — $
+                            {% if acc.account_type == "Gold Holdings" %}
+                                {{ gold_total }}
+                            {% elif acc.account_type == "Cash & Cash Equivalents" %}
+                                {{ cash_total }}
+                            {% else %}
+                                {{ acc.balance }}
+                            {% endif %}
+                            ({{ acc.account_type }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+  </div>
+    <div>
+
+
+                <div class="field">
+                    <label for="to_account">Transfer To</label>
+                    <select name="to_account" id="to_account" required>
+                        {% for acc in accounts %}
+                        <option value="{{ acc.id }}">
+                            {{ acc.user }} — $
+                            {% if acc.account_type == "Gold Holdings" %}
+                                {{ gold_total }}
+                            {% elif acc.account_type == "Cash & Cash Equivalents" %}
+                                {{ cash_total }}
+                            {% else %}
+                                {{ acc.balance }}
+                            {% endif %}
+                            ({{ acc.account_type }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="date">Date</label>
+                    <input type="date" name="date" id="date" required>
+                </div>
+  </div>
+
+
+  <div>
+
+
+                <div class="field">
+                    <label for="amount">Amount</label>
+                    <input type="number" name="amount" id="amount" step="0.01" min="0.01" required>
+                </div>
+
+                  <div class="field">
+                    <label for="memo">Memo</label>
+                    <input type="text" name="memo" id="memo" placeholder="Optional note">
+                </div>
+
+                </div>
+
+
+            </div>
+
+            
+            <!-- Row 2 -->
+            <div class="form-row">
+                
+
+              
+            </div>
+
+            <div class="transfer-actions">
+                <button type="button" class="btn btn-secondary">Cancel</button>
+                <button type="submit" class="btn btn-primary">Next</button>
+            </div>
+
+        </div>
+    </form>
+
+</div>
+{% endblock %}

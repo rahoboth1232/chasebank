@@ -1,0 +1,418 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Source Sans 3', sans-serif; background: #f5f5f5; color: #333; min-height: 100vh; }
+
+  /* MAIN CONTENT */
+  .main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 16px;
+    display: grid;
+    grid-template-columns: 2fr 280px;
+    gap: 20px;
+  }
+
+  /* CARDS */
+  .card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .card-header h2 { font-size: 14px; font-weight: 700; color: #333; }
+  .card-header a { font-size: 12px; color: #117ACA; text-decoration: none; }
+  .card-body { padding: 16px; }
+
+  /* ACCOUNT ROW */
+  .account-row {
+    padding: 14px 16px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .account-row:last-child { border-bottom: none; }
+  .account-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .account-name {
+    font-size: 14px;
+    color: #117ACA;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .account-name:hover { text-decoration: underline; }
+  .account-actions { display: flex; gap: 8px; }
+  .btn {
+    padding: 5px 12px;
+    font-size: 12px;
+    border: 1px solid #117ACA;
+    border-radius: 3px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+    background: #fff;
+    color: #117ACA;
+  }
+  .btn-primary {
+    background: #117ACA;
+    color: #fff;
+  }
+  .btn-primary:hover { background: #0d6aad; }
+  .btn:hover { background: #f0f7ff; }
+  .btn-more {
+    padding: 5px 10px;
+    font-size: 12px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    cursor: pointer;
+    background: #fff;
+    color: #333;
+  }
+
+  .balance-amount {
+    font-size: 24px;
+    font-weight: 400;
+    color: #000000;
+    margin: 4px 0;
+  }
+  .balance-label { font-size: 12px; color: #666; }
+
+  .credit-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .credit-detail-item { font-size: 12px; color: #555; }
+  .credit-detail-item .label { color: #888; font-size: 11px; }
+  .credit-detail-item .value { font-weight: 600; color: #333; }
+
+  .notice {
+    background: #fff8e1;
+    border: 1px solid #ffe082;
+    border-radius: 3px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #555;
+    margin: 8px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .notice-icon { color: #f59e0b; font-size: 14px; flex-shrink: 0; }
+
+  /* REWARDS SIDEBAR */
+  .rewards-card { background: #fff; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 16px; overflow: hidden; }
+  .rewards-header {
+    background: #003087;
+    color: #fff;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .rewards-body { padding: 14px; }
+  .reward-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .reward-item:last-child { border-bottom: none; }
+  .reward-icon {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .reward-icon.blue { background: #e3f2fd; }
+  .reward-icon.orange { background: #fff3e0; }
+  .reward-pts { font-size: 20px; font-weight: 700; color: #333; }
+  .reward-desc { font-size: 11px; color: #777; }
+
+  /* TRAVEL */
+  .travel-card { background: #fff; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 16px; overflow: hidden; }
+  .travel-header { padding: 10px 14px; font-size: 13px; font-weight: 700; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 8px; }
+  .travel-body { padding: 14px; }
+  .travel-body p { font-size: 12px; color: #555; line-height: 1.5; }
+  .travel-body a { color: #117ACA; font-size: 12px; }
+
+  /* OFFERS */
+  .offers-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .offer-item {
+    background: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 8px;
+    text-align: center;
+    font-size: 11px;
+  }
+  .offer-pct { font-size: 18px; font-weight: 700; color: #117ACA; }
+  .offer-label { color: #555; margin-top: 2px; }
+
+  .see-offers-btn {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    background: #117ACA;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    margin-top: 12px;
+    text-align: center;
+  }
+  .see-offers-btn:hover { background: #0d6aad; }
+
+  .section-title { font-size: 13px; font-weight: 700; color: #333; margin-bottom: 10px; }
+
+  /* HAMBURGER BUTTON */
+
+@media (max-width: 768px) {
+
+  body {
+    font-size: 15px;
+  }
+
+  .balance-amount {
+    font-size: 22px;
+  }
+
+  .card-header h2 {
+    font-size: 15px;
+  }
+
+}
+
+  }
+  /* OVERLAY */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 997;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .overlay.open { opacity: 1; }
+
+  @media (max-width: 768px) {
+    .main { grid-template-columns: 1fr; }
+    .credit-details { grid-template-columns: 1fr 1fr; }
+    .offers-grid { grid-template-columns: 1fr 1fr; }
+    .mobile-menu { display: block; }
+    .overlay { display: block; }
+  }
+
+
+
+</style>
+{% endblock %}
+
+
+
+
+    
+{% block content %}
+<!-- MAIN CONTENT -->
+<div class="main">
+  <div class="left-col">
+
+    <!-- Bank Accounts -->
+    <div class="card">
+      <div class="card-header"><h2>Bank accounts</h2> <a href="#">^</a></div>
+      {% for account in accounts %}
+      <div class="account-row">
+        <div class="account-top">
+          <a href="#" class="account-name">{{ account.account_type }} (...{{ account.account_number | slice:-4 }}) ></a>
+          <div class="account-actions">
+            <button class="btn btn-primary">Transfer money</button>
+            <button class="btn-more">More ∨</button>
+          </div>
+        </div>
+        <div class="balance-amount">${{account.balance}}</div>
+        <div class="balance-label">Available balance</div>
+      </div>
+          {% endfor %}
+    </div>
+
+    <!-- Credit Cards -->
+    <div class="card">
+      <div class="card-header"><h2>Credit cards</h2> <a href="#">^</a></div>
+
+      <!-- Card 1 -->
+      <div class="account-row">
+        <div class="account-top">
+          <a href="#" class="account-name">Slate (...4952) ›</a>
+          <div class="account-actions">
+            <button class="btn btn-primary">Pay card</button>
+            <button class="btn-more">More ∨</button>
+          </div>
+        </div>
+        <div class="notice">
+          <span class="notice-icon">ℹ</span>
+          <span>Your account is closed.<br>If you have a balance on this account, please continue to make your payments by the due date each month.</span>
+        </div>
+        <div class="notice">
+          <span class="notice-icon">ℹ</span>
+          <span>You don't have a payment due right now.<br>Your next statement period ends on Mar 11, 2026.</span>
+        </div>
+        <div class="balance-amount">$0.00</div>
+        <div class="balance-label">Current balance<br><span style="font-size:11px;color:#888">Details ∨</span></div>
+        <div class="credit-details">
+          <div class="credit-detail-item">
+            <div class="label">Last statement balance</div>
+            <div class="value">$0.00</div>
+          </div>
+          <div class="credit-detail-item">
+            <div class="label">Available credit</div>
+            <div class="value">$0.00</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="account-row">
+        <div class="account-top">
+          <a href="#" class="account-name">Freedom (...0491) ›</a>
+          <div class="account-actions">
+            <button class="btn btn-primary">Pay card</button>
+            <button class="btn-more">More ∨</button>
+          </div>
+        </div>
+        <div class="balance-amount">$1,948.18</div>
+        <div class="balance-label">Current balance</div>
+        <div class="credit-details">
+          <div class="credit-detail-item">
+            <div class="label">Payment due</div>
+            <div class="value">Mar 7, 2026</div>
+          </div>
+          <div class="credit-detail-item">
+            <div class="label">Minimum payment due</div>
+            <div class="value">$40.00</div>
+          </div>
+          <div class="credit-detail-item">
+            <div class="label">Last statement balance</div>
+            <div class="value">$1,404.67</div>
+          </div>
+          <div class="credit-detail-item">
+            <div class="label">Available credit</div>
+            <div class="value">$16,451.82</div>
+          </div>
+        </div>
+        <div style="margin-top:8px;"><a href="#" style="font-size:12px;color:#117ACA;">No cash back earned › (See 3 ›)</a></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="right-col">
+
+    <!-- Rewards -->
+    <div class="rewards-card">
+      <div class="rewards-header">Rewards <span>›</span></div>
+      <div class="rewards-body">
+        <div class="reward-item">
+          <div class="reward-icon blue">✈</div>
+          <div>
+            <div class="reward-pts">1,406</div>
+            <div class="reward-desc">Ultimate Rewards® points</div>
+          </div>
+        </div>
+        <div class="reward-item">
+          <div class="reward-icon orange">🛒</div>
+          <div>
+            <div class="reward-pts">150</div>
+            <div class="reward-desc">Amazon Rewards points<br><span style="color:#888">($1.7688)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Travel -->
+    <div class="travel-card">
+      <div class="travel-header">
+        <span>✈</span> Travel
+      </div>
+      <div class="travel-body">
+        <p>Explore adventures around the world.<br>Book hotels, flights, car rentals &amp; more.</p>
+        <a href="#">Explore travel ›</a>
+      </div>
+    </div>
+
+    <!-- Chase Offers -->
+    <div class="rewards-card">
+      <div class="rewards-header">Chase Offers <span style="background:#4CAF50;padding:2px 6px;border-radius:10px;font-size:11px;">ON</span></div>
+      <div class="rewards-body">
+        <p style="font-size:12px;color:#555;margin-bottom:10px;">Add deals, shop and get cash back at Amazon, Chase Travel, &amp; more.</p>
+        <div class="offers-grid">
+          <div class="offer-item">
+            <div class="offer-pct">10%</div>
+            <div class="offer-label">Caribou<br>cash back</div>
+          </div>
+          <div class="offer-item">
+            <div class="offer-pct">20%</div>
+            <div class="offer-label">TracFone<br>cash back</div>
+          </div>
+          <div class="offer-item">
+            <div class="offer-pct">10%</div>
+            <div class="offer-label">Starbucks<br>cash back</div>
+          </div>
+        </div>
+        <button class="see-offers-btn">See your offers</button>
+        <p style="font-size:12px;color:#117ACA;text-align:center;margin-top:10px;cursor:pointer;">Credit Journey</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+<script>
+  function toggleMenu() {
+    const menu = document.getElementById('mobileMenu');
+    const overlay = document.getElementById('overlay');
+    const burger = document.getElementById('hamburger');
+    const isOpen = menu.classList.contains('open');
+    if (isOpen) { closeMenu(); }
+    else {
+      menu.classList.add('open');
+      overlay.classList.add('open');
+      burger.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+  function closeMenu() {
+    document.getElementById('mobileMenu').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+</script>
+</body>
+</html>

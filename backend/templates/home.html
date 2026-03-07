@@ -1,0 +1,677 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Banking Login - Chase</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+/* ================= BASE ================= */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+body{
+  background:#fff;
+  color:#111;
+}
+
+
+
+/* ================= TOP NAV ================= */
+
+.main-nav{
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+  padding:20px 70px;
+}
+
+
+.top-nav{ 
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.nav-left{
+  display:flex;
+  align-items:center;
+  gap:30px;
+}
+
+.logo{
+  font-size:22px;
+  font-weight:800;
+  letter-spacing:1px;
+}
+
+.nav-links a{
+  margin-right:18px;
+  font-size:14px;
+  color:#111;
+  text-decoration:none;
+}
+
+.nav-right{
+  display:flex;
+  align-items:center;
+  gap:20px;
+  font-size:14px;
+}
+
+
+.sub-nav a{
+  margin-right:22px;
+  text-decoration:none;
+  font-size:16px;
+  color:#111;
+}
+
+/* ================= HERO ================= */
+.hero{
+  background:#005eb8;
+  min-height:420px;
+  display:flex;
+  align-items:center;
+  padding:40px;
+}
+
+.hero-inner{
+  width:100%;
+  max-width:1200px;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+/* ================= HERO LEFT ================= */
+.hero-right{
+  color:#fff;
+  max-width:520px;
+
+}
+
+.hero-left p{
+  font-size:20px;
+  color:#fff;
+}
+.hero-left h1{
+  font-size:80px;
+  color:#fff;
+}
+
+
+.hero-right h1{
+  font-size:42px;
+  font-weight:700;
+  margin-bottom:10px;
+}
+
+.hero-right h2{
+  font-size:32px;
+  margin-bottom:18px;
+}
+
+.hero-right h3{
+  font-size:40px;
+  line-height:1.1;
+  margin-bottom:22px;
+  font-bold:20px;
+}
+.hero-right p{
+  margin-bottom:10px;
+   font-bold:23px;
+}
+
+.cta-btn{
+  background:#1f8f3c;
+  color:#fff;
+  padding:12px 24px;
+  border-radius:4px;
+  text-decoration:none;
+  font-weight:600;
+  display:inline-block;
+}
+
+/* ================= LOGIN CARD ================= */
+.login-card{
+  background:#fff;
+  width:360px;
+  padding:26px;
+  border-radius:4px;
+  box-shadow:0 12px 40px rgba(0,0,0,.2);
+}
+
+.login-card h3{
+  font-size:22px;
+  margin-bottom:18px;
+  color:grey;
+}
+
+.form-group{
+  margin-bottom:14px;
+}
+
+.form-group input{
+  width:100%;
+  padding:10px;
+  font-size:14px;
+  border:none;
+  border-bottom:1px solid #9ca3af;
+  outline:none;
+}
+
+.form-options{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:13px;
+  margin:14px 0;
+}
+
+.login-btn{
+  width:100%;
+  background:#005eb8;
+  color:#fff;
+  padding:10px;
+  border:none;
+  border-radius:4px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.login-links{
+  margin-top:12px;
+  font-size:13px;
+}
+
+.login-links a{
+  display:block;
+  margin-top:6px;
+  text-decoration:none;
+  color:#005eb8;
+}
+
+/* ================= RESPONSIVE ================= */
+@media(max-width:900px){
+  .hero-inner{
+    flex-direction:column;
+    gap:30px;
+  }
+}
+/* ================= CHOOSE SECTION ================= */
+.choose-section{
+  background:#fff;
+  padding:60px 40px;
+  text-align:center;
+}
+
+.choose-title{
+  font-size:32px;
+  font-weight:700;
+  margin-bottom:28px;
+}
+
+/* ICONS */
+.choose-icons{
+  display:flex;
+  justify-content:center;
+  gap:40px;
+  margin-bottom:40px;
+}
+
+.icon-item{
+  text-align:center;
+  font-size:14px;
+  color:#005eb8;
+  cursor:pointer;
+}
+
+.icon-item i{
+  font-size:26px;
+  display:block;
+  margin-bottom:8px;
+}
+
+/* CARDS */
+.choose-cards{
+  display:flex;
+  justify-content:center;
+  gap:28px;
+  flex-wrap:wrap;
+}
+
+.choose-card{
+  width:320px;
+  background:#fff;
+  border-radius:6px;
+  box-shadow:0 10px 30px rgba(0,0,0,.1);
+  text-align:left;
+  overflow:hidden;
+}
+
+.choose-card.blue .card-header{
+  background:#005eb8;
+  color:#fff;
+}
+
+.choose-card.gray .card-header{
+  background:#e5e7eb;
+}
+
+.card-header{
+  padding:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.card-body{
+  padding:20px;
+  font-size:14px;
+  color:#374151;
+}
+
+.card-body strong{
+  display:block;
+  margin-bottom:6px;
+}
+
+.card-btn{
+  width:100%;
+  border:none;
+  background:#0b6efd;
+  color:#fff;
+  padding:12px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.card-btn.outline{
+  background:#fff;
+  color:#005eb8;
+  border-top:1px solid #e5e7eb;
+}
+
+/* DOTS */
+.slider-dots{
+  margin-top:30px;
+}
+
+.dot{
+  display:inline-block;
+  width:10px;
+  height:10px;
+  background:#cbd5e1;
+  border-radius:50%;
+  margin:0 6px;
+}
+
+.dot.active{
+  background:#005eb8;
+}
+/* ================= PROMO SECTION ================= */
+.promo-section{
+  background:#fff;
+  padding:60px 40px;
+  max-width:1200px;
+  margin:auto;
+}
+
+.promo-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:50px;
+  margin-bottom:50px;
+}
+
+/* IMAGE BLOCKS */
+.promo-image{
+  width:420px;
+  height:220px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.promo-image.blue{
+  background:#005eb8;
+  color:#fff;
+}
+
+.promo-amount{
+  text-align:center;
+}
+.promo-amount span{
+  font-size:18px;
+}
+.promo-amount strong{
+  font-size:72px;
+  font-weight:800;
+  display:block;
+}
+
+/* CARD IMAGE */
+.promo-image.card{
+  background:linear-gradient(135deg,#0f172a,#1e3a8a);
+  position:relative;
+}
+
+.card-badge{
+  position:absolute;
+  top:18px;
+  right:18px;
+  background:#facc15;
+  color:#000;
+  padding:6px 10px;
+  font-size:12px;
+  font-weight:700;
+}
+
+/* CONTENT */
+.promo-content{
+  max-width:520px;
+}
+
+.promo-content h3{
+  font-size:26px;
+  font-weight:700;
+  margin-bottom:12px;
+}
+
+.promo-content p{
+  font-size:15px;
+  line-height:1.6;
+  color:#374151;
+  margin-bottom:18px;
+}
+
+/* BUTTONS */
+.promo-btn{
+  display:inline-block;
+  padding:10px 22px;
+  background:#0b6efd;
+  color:#fff;
+  text-decoration:none;
+  font-weight:600;
+  border-radius:4px;
+}
+
+.promo-btn.green{
+  background:#15803d;
+}
+
+.promo-btn:hover{
+  opacity:.9;
+}
+
+/* DIVIDER */
+.promo-divider{
+  border:none;
+  border-top:1px solid #e5e7eb;
+  margin:50px 0;
+}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .promo-row{
+    flex-direction:column;
+    text-align:center;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="main-nav">
+<header class="top-nav">
+
+
+  <div class="nav-left">
+    <div class="nav-links">
+      <a href="#">Personal</a>
+      <a href="#">Business</a>
+      <a href="#">Commercial</a>
+    </div>
+  </div>
+
+   
+
+  <div class="nav-right">
+    <span>Customer service</span>
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </div>
+
+
+</header>
+
+ <div class="logo">
+         <img src="{% static 'images/image.png' %}">
+    </div>
+
+<!-- SUB NAV -->
+<nav class="sub-nav">
+  <a href="#">Checking</a>
+  <a href="#">Savings&CDs</a>
+  <a href="#">Credit cards</a>
+  <a href="#">Home loans</a>
+  <a href="#">Auto</a>
+  <a href="#">Investing</a>
+  <a href="#">Education & goals</a>
+  <a href="#">Travel</a>
+</nav>
+
+</div>
+
+<!-- HERO -->
+<section class="hero">
+
+  <div class="hero-inner">
+
+ 
+     <div class="hero-left">
+     <img src="{% static 'images/home.webp' %}"/>
+    </div> 
+
+    <div class="hero-right">
+     
+      <h3>
+        
+New Chase checking customers
+      </h3>
+      <P>
+Open a Chase Total Checking® account with qualifying activities
+      </p>
+      <a href="#" class="cta-btn">Open an account</a>
+    </div>
+
+    <!-- LOGIN -->
+     <form method="POST">
+      {% csrf_token %}
+    <div class="login-card">
+      <h3>Welcome</h3>
+
+      <div class="form-group">
+        <input type="text" name="username" placeholder="Username">
+      </div>
+
+      <div class="form-group">
+        <input type="password" name="password" placeholder="Password">
+      </div>
+
+      <div class="form-options">
+        <label>
+          <input type="checkbox"> Remember me
+        </label>
+        <a href="#">Use token</a>
+      </div>
+  {% if error %}
+          <p style="color:red;font-size:14px;margin-bottom:10px;">{{ error }}</p>
+        {% endif %}
+
+        <button class="btn" type="submit">Sign in</button>
+
+   
+
+      <div class="login-links">
+        <a href="#">Forgot username/password?</a>
+        <a href="#">Not enrolled? Sign up now</a>
+      </div>
+    </div>
+
+  </div>
+     </form>
+</section>
+
+<!-- ================= CHOOSE SECTION ================= -->
+<section class="choose-section">
+
+  <h2 class="choose-title">Choose what's right for you</h2>
+
+  <!-- ICON ROW -->
+  <div class="choose-icons">
+    <div class="icon-item active">
+      <i class="fa-solid fa-briefcase"></i>
+      <span>Business</span>
+    </div>
+    <div class="icon-item">
+      <i class="fa-regular fa-credit-card"></i>
+      <span>Credit cards</span>
+    </div>
+    <div class="icon-item">
+      <i class="fa-solid fa-wallet"></i>
+      <span>Checking</span>
+    </div>
+    <div class="icon-item">
+      <i class="fa-solid fa-plane"></i>
+      <span>Travel</span>
+    </div>
+    <div class="icon-item">
+      <i class="fa-solid fa-piggy-bank"></i>
+      <span>Savings</span>
+    </div>
+    <div class="icon-item">
+      <i class="fa-solid fa-house"></i>
+      <span>Home loans</span>
+    </div>
+  </div>
+
+  <!-- CARDS -->
+  <div class="choose-cards">
+
+    <div class="choose-card blue">
+      <div class="card-header">
+        <h3>Sapphire Reserve®</h3>
+        <i class="fa-regular fa-credit-card"></i>
+      </div>
+      <div class="card-body">
+        <strong>Exclusive Offer:</strong>
+        <p>Up to 175,000 points</p>
+        <span>
+          See if you’re preapproved with no impact to your credit score.
+        </span>
+      </div>
+      <button class="card-btn">Get started</button>
+    </div>
+
+    <div class="choose-card blue">
+      <div class="card-header">
+        <h3>Home Lending</h3>
+        <i class="fa-solid fa-house"></i>
+      </div>
+      <div class="card-body">
+        <strong>Guaranteed on-time closing</strong>
+        <p>Or get $5,000</p>
+        <span>
+          Eligible products close in as soon as three weeks.
+        </span>
+      </div>
+      <button class="card-btn">Get started</button>
+    </div>
+
+    <div class="choose-card gray">
+      <div class="card-header">
+        <h3>J.P. Morgan</h3>
+        <i class="fa-solid fa-users"></i>
+      </div>
+      <div class="card-body">
+        <strong>Don’t go it alone</strong>
+        <span>
+          Work with a dedicated advisor to reach your goals.
+        </span>
+      </div>
+      <button class="card-btn outline">Continue</button>
+    </div>
+
+  </div>
+
+  <!-- DOTS -->
+  <div class="slider-dots">
+    <span class="dot active"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+  </div>
+
+</section>
+
+<!-- ================= PROMO SECTION ================= -->
+<section class="promo-section">
+
+  <!-- TOP PROMO -->
+  <div class="promo-row">
+
+    <div class="promo-image blue">
+      <div class="promo-amount">
+        <span>Earn up to</span>
+        <strong>$500</strong>
+      </div>
+    </div>
+
+    <div class="promo-content">
+      <h3>Keep your business moving forward with Chase</h3>
+      <p>
+        Open a new Chase Business Complete Checking® account with qualifying
+        activities. For new business checking customers only.
+      </p>
+      <a href="#" class="promo-btn green">Open account</a>
+    </div>
+
+  </div>
+
+  <hr class="promo-divider">
+
+  <!-- BOTTOM PROMO -->
+  <div class="promo-row">
+
+    <div class="promo-content">
+      <h3>Earn a $200 bonus</h3>
+      <p>
+        Plus, earn unlimited 1.5% cash back or more on all purchases,
+        including 3% on dining and drugstores — <strong>all with no annual fee.</strong>
+      </p>
+      <a href="#" class="promo-btn">Learn more</a>
+    </div>
+
+    <div class="promo-image card">
+      <div class="card-badge">NO ANNUAL FEE</div>
+    </div>
+
+  </div>
+
+</section>
+
+</body>
+</html>
