@@ -1,0 +1,332 @@
+{% load static %}
+{% load humanize %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cash Account</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+       /* LIGHT THEME VARIABLES */
+:root {
+    --primary: #0a57ff;
+    --primary-light: #e8f0ff;
+    --bg: #fafbfc;
+    --card: #ffffff;
+    --border: #e6e6e6;
+    --text-dark: #1d1d1f;
+    --text-light: #565656;
+    --green: #0ca678;
+    --red: #e03131;
+    --shadow: rgba(0, 0, 0, 0.08);
+}
+
+/* CONTAINER */
+.cashAccount .container {
+    max-width: 1250px;
+    
+    background: var(--card);
+    border-radius: 12px;
+    padding-bottom: 25px;
+    box-shadow: 0 4px 20px var(--shadow);
+    border: 1px solid var(--border);
+}
+
+.header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+}
+
+.cashAccount{
+    /* background-color: #063ec9; */
+    padding: 0 50px;
+}
+/* HEADER */
+.cashAccount .header {
+    padding: 30px 40px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cashAccount .header-left h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.cashAccount .balance-card {
+    margin-top: 10px;
+    background: var(--primary-light);
+    padding: 15px 20px;
+    border-radius: 10px;
+    border: 1px solid var(--primary);
+    display: inline-block;
+}
+
+.cashAccount .balance-card h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+/* ACTION BUTTONS */
+.action-buttons .btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    margin-left: 10px;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.btn.primary { background: var(--green); color: white; }
+
+.btn:hover { opacity: 0.85; }
+
+/* FILTER BAR */
+.filter-bar {
+    display: flex;
+    align-items: center;
+    padding: 20px 35px;
+    gap: 20px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border);
+}
+
+.filter-group label {
+    font-size: 14px;
+    color: var(--text-light);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.filter-group input {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.filter-btn {
+    background: var(--primary);
+    color: white;
+}
+
+.export-btn {
+    background: #0096c7;
+    color: white;
+}
+
+/* TABLE */
+.cashAccount .table-container {
+    padding: 25px 35px;
+    overflow-x: auto;
+}
+
+.cashAccount table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.cashAccount thead {
+    background: var(--primary-light);
+}
+
+.cashAccount th {
+    padding: 14px;
+    font-size: 13px;
+    color: var(--text-dark);
+    font-weight: 600;
+    text-transform: uppercase;
+    text-align: left;
+    border-bottom: 2px solid var(--primary);
+}
+
+.cashAccount td {
+    padding: 16px 14px;
+    font-size: 14px;
+    color: var(--text-dark);
+    border-bottom: 1px solid var(--border);
+}
+
+
+
+.cashAccount td:nth-child(4) { color: var(--green); font-weight: 600; }
+.cashAccount td:nth-child(5) { color: var(--red); font-weight: 600; }
+.cashAccount td:nth-child(6) { color: var(--primary); font-weight: 700; }
+
+/* EMPTY STATE */
+.cashAccount .empty-state {
+    text-align: center;
+    padding: 35px;
+    color: var(--text-light);
+    font-size: 15px;
+}
+
+/* RESPONSIVE */
+@media(max-width: 768px) {
+    .cashAccount .header { flex-direction: column; align-items: flex-start; }
+    .action-buttons { margin-top: 15px; }
+    .filter-bar { flex-direction: column; align-items: stretch; }
+    .cashAccount th, .cashAccount td { font-size: 12px; padding: 10px; }
+}
+/* TOAST POPUP */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #0a57ff;
+    color: white;
+    padding: 16px 22px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+    transition: all 0.4s ease;
+    z-index: 9999;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+
+/* Dark blue hover only for filter & download buttons */
+.filter-btn:hover,
+.export-btn:hover {
+    background: #063ec9 !important;  /* dark blue */
+    color: #fff !important;
+}
+
+    </style>
+</head>
+<body>
+
+
+<div class="cashAccount">
+
+    <div class="container">
+
+        <!-- HEADER + ACTION BUTTONS -->
+        <div class="header">
+
+            <div class="header-left">
+                <h2>Cash Account</h2>
+
+                <div class="balance-card">
+                     Account number - {% for acc in cash_accounts %}
+                                {{ acc.account_number }}
+                            {% endfor %}
+                </div>
+            </div>
+
+            <div class="action-buttons balance-card">
+          <h3>Total Balance:
+                        $
+                        {% if cash_entries %}
+                            {{ cash_entries.0.account_balance|intcomma }}
+                        {% else %}0{% endif %}
+          </h3>
+            </div>
+
+            
+            
+        </div>
+
+
+        <!-- FILTER BAR -->
+        <div class="filter-bar">
+
+            <div class="filter-group">
+                <label>Date From</label>
+                <input type="date">
+            </div>
+
+            <div class="filter-group">
+                <label>Date To</label>
+                <input type="date">
+            </div>
+
+            <div class="filter-group">
+                <label>Search</label>
+                <input type="text" placeholder="Search description...">
+            </div>
+
+            <button class="bt filter-btn" >Apply Filters</button>
+
+            <button class="btn export-btn" onclick="window.print()">Print</button>
+        </div>
+
+
+        <!-- TABLE -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Credit</th>
+                        <th>Debit</th>
+                        <th>Balance</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                {% for a in cash_entries %}
+                    <tr>
+                        <td>{{ a.date }}</td>
+                       
+
+                        <td>{{ a.description }}</td>
+                        <td>${{ a.credit|intcomma }}</td>
+                        <td>${{ a.debit|intcomma }}</td>
+                        <td>${{ a.account_balance|intcomma }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" class="empty-state">No cash account entries found.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+<div id="toast" class="toast">
+    Your Checking account history is downloaded and sent to your registered email.
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const downloadBtn = document.querySelector(".export-btn");
+    const toast = document.getElementById("toast");
+
+    downloadBtn.addEventListener("click", function () {
+
+        // SHOW TOAST
+        toast.classList.add("show");
+
+        // HIDE AFTER 3 SECONDS
+        setTimeout(() => {
+            toast.classList.remove("show");
+        }, 3000);
+    });
+});
+</script>
+
+<script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
