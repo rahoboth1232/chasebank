@@ -31,6 +31,7 @@ urlpatterns = [
      path('cash-account/', views.cash_account_list, name='cash_account'),
     path("api/transfer/", views.transfer_view, name="transfer"),
     path("activity/", views.activity_list, name="activity"),
+    path("api/cds/",  views.cd_list_api , name="cd_list_api"),
 
 
 ]

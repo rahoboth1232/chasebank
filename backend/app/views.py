@@ -468,3 +468,62 @@ def transfer_view(request):
             "message": "Transfer request created",
             "transfer_id": transfer.id
         }, status=status.HTTP_201_CREATED)
+    
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from decimal import Decimal
+from datetime import date, timedelta
+from .models import CDAccount
+
+
+@login_required
+def cd_list_api(request):
+
+    if request.method == "POST":
+        principal = request.POST.get("principal")
+        rate = request.POST.get("rate")
+        duration = request.POST.get("duration")
+
+        if principal and rate and duration:
+            principal = Decimal(principal)
+            rate = Decimal(rate)
+            duration = int(duration)
+
+            maturity_date = date.today() + timedelta(days=duration * 365)
+
+            cd = CDAccount(
+                user=request.user,
+                principal_amount=principal,
+                interest_rate=rate,
+                duration_years=duration,
+                maturity_date=maturity_date,
+                maturity_amount=Decimal("0")
+            )
+
+            cd.maturity_amount = cd.calculate_maturity_amount()
+            cd.save()
+
+            return JsonResponse({
+                "status": "success",
+                "message": "CD created successfully"
+            })
+
+        return JsonResponse({"status": "error", "message": "Invalid data"}, status=400)
+
+    # GET Request (Fetch CDs)
+    cds = CDAccount.objects.filter(user=request.user).order_by("-created_at")
+
+    data = [
+        {
+            "id": cd.id,
+            "principal_amount": cd.principal_amount,
+            "interest_rate": cd.interest_rate,
+            "duration_years": cd.duration_years,
+            "maturity_date": cd.maturity_date,
+            "maturity_amount": cd.maturity_amount,
+            "created_at": cd.created_at
+        }
+        for cd in cds
+    ]
+
+    return JsonResponse({"cds": data})

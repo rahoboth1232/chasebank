@@ -374,3 +374,57 @@ class AdminCompose(models.Model):
 
     def __str__(self):
         return f"{self.subject} - {self.user.username}"
+
+           
+from django.db import models
+from django.contrib.auth.models import User
+from decimal import Decimal
+from django.utils import timezone
+
+
+class CDAccount(models.Model):
+
+    STATUS_CHOICES = (
+        ("ACTIVE", "Active"),
+        ("MATURED", "Matured"),
+    )
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    principal_amount = models.DecimalField(max_digits=12, decimal_places=2)
+    interest_rate = models.DecimalField(max_digits=5, decimal_places=2)
+    duration_years = models.PositiveIntegerField()
+
+    start_date = models.DateField(auto_now_add=True)
+    maturity_date = models.DateField()
+
+    maturity_amount = models.DecimalField(max_digits=12, decimal_places=2)
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default="ACTIVE"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def calculate_maturity_amount(self):
+        interest = (
+            self.principal_amount *
+            self.interest_rate *
+            Decimal(self.duration_years)
+        ) / Decimal("100")
+
+        return self.principal_amount + interest
+
+    def update_status(self):
+        if timezone.now().date() >= self.maturity_date:
+            self.status = "MATURED"
+        else:
+            self.status = "ACTIVE"
+
+    def save(self, *args, **kwargs):
+        self.update_status()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"CD - {self.user.username} ({self.status})"

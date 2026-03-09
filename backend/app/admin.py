@@ -226,3 +226,132 @@ class AdminComposeAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at",)
 
     actions = ["mark_as_read"]
+
+import csv
+from django.http import HttpResponse
+from django.contrib import admin
+from .models import CDAccount
+from django.utils import timezone
+import csv
+from django.http import HttpResponse
+from django.contrib import admin
+from .models import CDAccount
+from django.utils import timezone
+
+
+
+
+def export_cd_csv(modeladmin, request, queryset):
+    response = HttpResponse(content_type="text/csv")
+    response["Content-Disposition"] = 'attachment; filename="cd_accounts.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow([
+        "User",
+        "Principal",
+        "Interest Rate",
+        "Duration (Years)",
+        "Maturity Amount",
+        "Maturity Date",
+        "Status"
+    ])
+
+    for cd in queryset:
+        writer.writerow([
+            cd.user.username,
+            cd.principal_amount,
+            cd.interest_rate,
+            cd.duration_years,
+            cd.maturity_amount,
+            cd.maturity_date,
+            cd.status
+        ])
+
+    return response
+
+export_cd_csv.short_description = "Export selected CDs to CSV"
+
+@admin.register(CDAccount)
+class CDAccountAdmin(admin.ModelAdmin):
+
+    list_display = (
+        "id",
+        "user",
+        "principal_amount",
+        "interest_rate",
+        "duration_years",
+        "maturity_amount",
+        "maturity_date",
+        "status",
+        "created_at",
+    )
+
+    list_filter = (
+        "status",
+        "duration_years",
+        "interest_rate",
+        "created_at",
+    )
+
+    search_fields = (
+        "user__username",
+        "user__email",
+    )
+
+    actions = [export_cd_csv]
+
+    readonly_fields = (
+        "maturity_amount",
+        "start_date",
+        "created_at",
+        "status",
+    )
+
+    ordering = ("-created_at",)
+
+    fieldsets = (
+        ("User", {
+            "fields": ("user",)
+        }),
+        ("CD Details", {
+            "fields": (
+                "principal_amount",
+                "interest_rate",
+                "duration_years",
+            )
+        }),
+        ("Calculated Info", {
+            "fields": (
+                "maturity_amount",
+                "maturity_date",
+                "status",
+            )
+        }),
+        ("Timestamps", {
+            "fields": (
+                "start_date",
+                "created_at",
+            )
+        }),
+    )
+
+    def has_delete_permission(self, request, obj=None):
+        """
+        Prevent deleting matured CDs
+        """
+        if obj and obj.status == "MATURED":
+            return False
+        return super().has_delete_permission(request, obj)
+
+    def save_model(self, request, obj, form, change):
+        """
+        Lock principal/rate/duration after creation
+        """
+        if change:
+            old_obj = CDAccount.objects.get(pk=obj.pk)
+            obj.principal_amount = old_obj.principal_amount
+            obj.interest_rate = old_obj.interest_rate
+            obj.duration_years = old_obj.duration_years
+
+        obj.maturity_amount = obj.calculate_maturity_amount()
+        super().save_model(request, obj, form, change)
