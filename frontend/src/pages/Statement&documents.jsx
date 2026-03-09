@@ -1,13 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown, ChevronRight, FileText, Download } from "lucide-react";
 import { useTransaction } from "../hooks/useTransaction";
+import { useDocuments } from "../hooks/useDocuments";
 
-const ACCOUNTS = [
-  { id: 1, label: "CHASE SAVINGS (...9686)" },
-  { id: 2, label: "FREEDOM (...5430)" },
-  { id: 3, label: "SLATE (...6552)" },
-  { id: 4, label: "AMAZON VISA (...7685)" },
-];
 
 const YEARS = ["2026", "2025", "2024", "2023", "2022", "2021", "2020"];
 
@@ -61,9 +56,7 @@ const SECTION_DATA = {
   },
   "Escrow documents": {
     info: "Escrow-related documents including analysis statements and disbursement notices.",
-    rows: [
-      { date: "Jan 05, 2026", type: "Escrow Analysis", size: "3 Pages" },
-    ],
+    rows: [{ date: "Jan 05, 2026", type: "Escrow Analysis", size: "3 Pages" }],
   },
 };
 
@@ -71,15 +64,17 @@ const DOCUMENTS_PANEL = [
   {
     category: "Statements",
     items: [
-      { name: "February 2026 Statement", date: "Feb 11, 2026", size: "2 Pages" },
+      {
+        name: "February 2026 Statement",
+        date: "Feb 11, 2026",
+        size: "2 Pages",
+      },
       { name: "January 2026 Statement", date: "Jan 13, 2026", size: "2 Pages" },
     ],
   },
   {
     category: "Tax Documents",
-    items: [
-      { name: "2025 1099-INT", date: "Jan 28, 2026", size: "1 Page" },
-    ],
+    items: [{ name: "2025 1099-INT", date: "Jan 28, 2026", size: "1 Page" }],
   },
   {
     category: "Notices & Letters",
@@ -91,15 +86,31 @@ const DOCUMENTS_PANEL = [
 ];
 
 export default function ChaseStatements() {
-  const [activeAccount, setActiveAccount] = useState(1);
+  const [activeAccount, setActiveAccount] = useState(null);
   const [activeTab, setActiveTab] = useState("Accounts");
   const [selectedYear, setSelectedYear] = useState("2026");
   const [activeSection, setActiveSection] = useState("Statements");
 
+  const { data } = useTransaction();
+  console.log(data)
+  const { data: documents } = useDocuments();
+  
+  const accounts =
+  [...new Set(data?.entries?.map((entry) => entry.entry_type))] || [];
 
-const {data} = useTransaction()
-console.log(data)
   const section = SECTION_DATA[activeSection];
+  
+useEffect(() => {
+  if (accounts.length && !activeAccount) {
+    setActiveAccount(accounts[0]);
+  }
+}, [accounts]);
+
+
+
+const filteredTransactions = data?.entries?.filter(
+  (entry) => entry.entry_type === activeAccount
+);
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
@@ -133,17 +144,17 @@ console.log(data)
           {/* Accounts tab */}
           {activeTab === "Accounts" && (
             <ul>
-              {ACCOUNTS.map((acc) => (
-                <li key={acc.id}>
+              {accounts.map((acc) => (
+                <li key={acc}>
                   <button
-                    onClick={() => setActiveAccount(acc.id)}
+                    onClick={() => setActiveAccount(acc)}
                     className={`w-full text-left px-4 py-2.5 text-xs transition-colors ${
-                      activeAccount === acc.id
+                      activeAccount === acc
                         ? "border-l-4 border-[#1a3a6b] text-[#1a3a6b] font-semibold bg-blue-50 pl-3"
                         : "border-l-4 border-transparent text-gray-600 hover:bg-gray-50 hover:text-[#1a3a6b]"
                     }`}
                   >
-                    {acc.label}
+                    {acc}
                   </button>
                 </li>
               ))}
@@ -179,7 +190,6 @@ console.log(data)
 
         {/* Main Content */}
         <div className="flex-1 p-6">
-
           {/* ── ACCOUNTS TAB ── */}
           {activeTab === "Accounts" && (
             <>
@@ -188,56 +198,44 @@ console.log(data)
                   <FileText size={14} className="text-white" />
                 </div>
                 <h2 className="text-base font-bold text-gray-800">
-                  {ACCOUNTS.find((a) => a.id === activeAccount)?.label}
+                 {activeAccount}
                 </h2>
               </div>
 
               <p className="text-xs text-[#1a5fa8] mb-4 ml-9">
-                If you don't see an account, statement or document, it may be hidden; you can unhide those in{" "}
-                <span className="underline cursor-pointer">show all hide accounts</span>.
+                If you don't see an account, statement or document, it may be
+                hidden; you can unhide those in{" "}
+                <span className="underline cursor-pointer">
+                  show all hide accounts
+                </span>
+                .
               </p>
 
               <div className="flex gap-4">
-                {/* Section list */}
-                <div className="w-52 flex-shrink-0">
-                  <ul>
-                    {LEFT_SECTIONS.map((sec) => (
-                      <li key={sec}>
-                        <button
-                          onClick={() => setActiveSection(sec)}
-                          className={`w-full text-left flex items-center gap-1.5 px-3 py-2 text-xs transition-colors ${
-                            activeSection === sec
-                              ? "text-[#1a3a6b] font-semibold"
-                              : "text-[#1a5fa8] hover:text-[#1a3a6b]"
-                          }`}
-                        >
-                          <ChevronRight
-                            size={12}
-                            className={`transition-transform flex-shrink-0 ${
-                              activeSection === sec ? "rotate-90" : ""
-                            }`}
-                          />
-                          {sec}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              
 
                 {/* Dynamic right panel */}
                 <div className="flex-1 bg-white border border-gray-200 rounded-sm">
                   <div className="bg-[#f0f4fa] border-b border-gray-200 px-4 py-3">
-                    <p className="text-xs font-semibold text-gray-800 mb-1">▼ {activeSection}</p>
-                    <p className="text-xs text-gray-500 leading-relaxed">{section.info}</p>
+                    <p className="text-xs font-semibold text-gray-800 mb-1">
+                      ▼ {activeSection}
+                    </p>
+                    <p className="text-xs text-gray-500 leading-relaxed">
+                      {section.info}
+                    </p>
                     <p className="text-xs text-gray-500 mt-1">
                       Having trouble opening your documents?{" "}
-                      <span className="text-[#1a5fa8] underline cursor-pointer">Get help</span>
+                      <span className="text-[#1a5fa8] underline cursor-pointer">
+                        Get help
+                      </span>
                     </p>
                   </div>
 
                   <div className="px-4 pt-3 pb-4">
                     <div className="flex items-center gap-3 mb-3">
-                      <label className="text-xs text-gray-600 font-medium">View</label>
+                      <label className="text-xs text-gray-600 font-medium">
+                        View
+                      </label>
                       <div className="relative">
                         <select
                           value={selectedYear}
@@ -245,37 +243,56 @@ console.log(data)
                           className="border border-gray-300 rounded px-2 py-1 text-xs text-gray-700 appearance-none pr-6 focus:outline-none focus:border-[#1a3a6b]"
                         >
                           {YEARS.map((y) => (
-                            <option key={y} value={y}>{y}</option>
+                            <option key={y} value={y}>
+                              {y}
+                            </option>
                           ))}
                         </select>
-                        <ChevronDown size={10} className="absolute right-1.5 top-2 text-gray-400 pointer-events-none" />
+                        <ChevronDown
+                          size={10}
+                          className="absolute right-1.5 top-2 text-gray-400 pointer-events-none"
+                        />
                       </div>
                     </div>
 
                     <table className="w-full text-xs">
                       <thead>
                         <tr className="border-b border-gray-200">
-                          <th className="text-left py-2 text-gray-500 font-medium">Date</th>
-                          <th className="text-left py-2 text-gray-500 font-medium">Type</th>
-                          <th className="text-left py-2 text-gray-500 font-medium">Size</th>
-                          <th className="text-left py-2 text-gray-500 font-medium">Open or Save</th>
+                          <th className="text-left py-2 text-gray-500 font-medium">
+                            Date
+                          </th>
+                          <th className="text-left py-2 text-gray-500 font-medium">
+                            Type
+                          </th>
+                         
+                          <th className="text-left py-2 text-gray-500 font-medium">
+                            credit
+                          </th>
+                          <th className="text-left py-2 text-gray-500 font-medium">
+                            balance
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
-                        {section.rows.map((row, i) => (
-                          <tr key={i} className="border-b border-gray-100 hover:bg-gray-50">
+                        {filteredTransactions?.map((row, i) => (
+                          <tr
+                            key={i}
+                            className="border-b border-gray-100 hover:bg-gray-50"
+                          >
                             <td className="py-2.5 text-gray-700">{row.date}</td>
-                            <td className="py-2.5 text-gray-700">{row.type}</td>
-                            <td className="py-2.5 text-gray-700">{row.size}</td>
-                            <td className="py-2.5">
-                              <div className="flex items-center gap-3">
-                                <button className="text-[#1a5fa8] hover:underline flex items-center gap-1 text-xs">
-                                  <FileText size={11} /> Open
-                                </button>
-                                <button className="text-[#1a5fa8] hover:underline flex items-center gap-1 text-xs">
-                                  <Download size={11} /> Save
-                                </button>
-                              </div>
+
+                            <td className="py-2.5 text-gray-700">
+                              {row.entry_type}
+                            </td>
+
+                           
+
+                            <td className="py-2.5 text-gray-700">
+                              ${row.credit || row.debit}
+                            </td>
+
+                            <td className="py-2.5 text-gray-700">
+                              ${row.balance}
                             </td>
                           </tr>
                         ))}
@@ -291,44 +308,60 @@ console.log(data)
           {activeTab === "Documents" && (
             <div className="bg-white border border-gray-200 rounded-sm">
               <div className="bg-[#f0f4fa] border-b border-gray-200 px-5 py-4">
-                <h2 className="text-sm font-semibold text-gray-800 mb-0.5">All Documents</h2>
+                <h2 className="text-sm font-semibold text-gray-800 mb-0.5">
+                  All Documents
+                </h2>
                 <p className="text-xs text-gray-500">
-                  A consolidated view of all your statements, tax documents, and notices across all accounts.
+                  A consolidated view of all your statements, tax documents, and
+                  notices across all accounts.
                 </p>
               </div>
               <div className="divide-y divide-gray-100">
-                {DOCUMENTS_PANEL.flatMap((group) =>
-                  group.items.map((item, i) => (
+                <div className="divide-y divide-gray-100">
+                  {documents?.documents?.map((doc) => (
                     <div
-                      key={`${group.category}-${i}`}
+                      key={doc.id}
                       className="flex items-center justify-between px-5 py-3 hover:bg-gray-50 transition-colors"
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 bg-blue-50 rounded flex items-center justify-center flex-shrink-0">
                           <FileText size={14} className="text-[#1a3a6b]" />
                         </div>
+
                         <div>
-                          <p className="text-xs font-medium text-gray-800">{item.name}</p>
+                          <p className="text-xs font-medium text-gray-800">
+                            {doc.title}
+                          </p>
                           <p className="text-xs text-gray-400">
-                            {group.category} · {item.date} · {item.size}
+                            Document · {doc.date}
                           </p>
                         </div>
                       </div>
+
                       <div className="flex items-center gap-3">
-                        <button className="text-xs text-[#1a5fa8] hover:underline flex items-center gap-1">
+                        <a
+                          href={doc.file}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-[#1a5fa8] hover:underline flex items-center gap-1"
+                        >
                           <FileText size={11} /> Open
-                        </button>
-                        <button className="text-xs text-[#1a5fa8] hover:underline flex items-center gap-1">
+                        </a>
+
+                        <a
+                          href={doc.file}
+                          download
+                          className="text-xs text-[#1a5fa8] hover:underline flex items-center gap-1"
+                        >
                           <Download size={11} /> Save
-                        </button>
+                        </a>
                       </div>
                     </div>
-                  ))
-                )}
+                  ))}
+                </div>
               </div>
             </div>
           )}
-
         </div>
       </div>
     </div>

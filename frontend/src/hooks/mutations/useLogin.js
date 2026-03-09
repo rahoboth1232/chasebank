@@ -17,6 +17,7 @@ const navigate = useNavigate()
         console.log("LOGIN SUCCESS");
       
       localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
       
     dispatch(setCredentials({
         token: data.accessToken,

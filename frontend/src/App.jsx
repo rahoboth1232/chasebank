@@ -8,9 +8,7 @@ import ChaseProfileSection from "./pages/Profile";
 import ChaseStatements from "./pages/Statement&documents";
 import ProtectedLayout from "./layouts/ProtectedLayout";
 import TransferActivity from "./pages/TranferActivity";
-
-
-
+import CDAccountDashboard from "./pages/CdAccounts";
 
 
 export default function App() {
@@ -61,6 +59,13 @@ export default function App() {
           <MainLayout>
 
           <TransferActivity/>
+          </MainLayout>
+          
+        } />
+        <Route path="/cdAccounts" element={
+          <MainLayout>
+
+          <CDAccountDashboard/>
           </MainLayout>
           
         } />

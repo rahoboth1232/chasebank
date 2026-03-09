@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useDashboard } from "../hooks/useDashboard";
 import { Link } from "react-router-dom";
+import { useCards } from "../hooks/useCards";
 
 function TabBar() {
   const [active, setActive] = useState("Overview");
@@ -294,10 +295,10 @@ function CreditJourney() {
 
 /* ── Root Dashboard ── */
 export default function ChaseDashboard() {
-  const[open,setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
   const { data: accounts, isLoading, isError } = useDashboard();
-
-  console.log(accounts);
+  const { data: cards } = useCards();
+  console.log(cards);
 
   const acc = accounts?.accounts;
 
@@ -322,8 +323,7 @@ export default function ChaseDashboard() {
                 <span className="text-xs font-bold text-gray-700">
                   Bank accounts
                 </span>
-               
-                 </div>
+              </div>
 
               <div className="px-4 py-3">
                 <div className="flex items-start justify-between">
@@ -340,26 +340,27 @@ export default function ChaseDashboard() {
                     <p className="text-[10px] text-gray-500 mt-0.5">
                       Available balance
                     </p>
-                    {open && <div className="flex gap-10 w-full">
-
-                      <div>
-  <p className="text-[15px] text-gray-500 mt-0.5">Deposit this month</p>
-  <p className="text-xl font-bold text-gray-900">
-                        ${accounts.deposits_month_total}
-
-  </p>
-                      </div>
-
-                      <div>
-                          <p className="text-[15px] text-gray-500 mt-0.5">Withdrawl this month</p>
-                          <p className="text-xl font-bold text-gray-900">  
-                        ${accounts.deposits_month_total}
-
+                    {open && (
+                      <div className="flex gap-10 w-full">
+                        <div>
+                          <p className="text-[15px] text-gray-500 mt-0.5">
+                            Deposit this month
                           </p>
-                      </div>
-                      
+                          <p className="text-xl font-bold text-gray-900">
+                            ${accounts.deposits_month_total}
+                          </p>
+                        </div>
 
-                      </div>}
+                        <div>
+                          <p className="text-[15px] text-gray-500 mt-0.5">
+                            Withdrawl this month
+                          </p>
+                          <p className="text-xl font-bold text-gray-900">
+                            ${accounts.deposits_month_total}
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex gap-2">
@@ -376,6 +377,8 @@ export default function ChaseDashboard() {
                     </button>
                   </div>
                 </div>
+
+                
               </div>
             </div>
           ))}
